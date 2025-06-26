@@ -3,28 +3,51 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Import Books CSV</title>
+    <title>Book Import</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
 <body class="p-4">
     <div class="container">
-        <h2>Book Import</h2>
-        <form method="post" enctype="multipart/form-data">
+        <h2>Book Import & Export</h2>
+        {% if message %}
+        <div class="alert alert-info">{{ message }}</div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="mb-4">
             {% csrf_token %}
             <div class="mb-3">
-                <input type="file" name="csv_file" accept=".csv" class="form-control d-inline-block w-auto">
-                <button class="btn btn-primary" name="action" value="import">Import CSV</button>
-                <button class="btn btn-danger" name="action" value="clear">Clear Database</button>
-                <button class="btn btn-secondary" name="action" value="export">Export CSV</button>
+                <input type="file" name="csv_file" accept=".csv" class="form-control d-inline-block w-auto mb-2">
+                <div>
+                    <button class="btn btn-primary" name="action" value="import_books">Import Books CSV</button>
+                    <button class="btn btn-info" name="action" value="import_authors">Import Authors CSV</button>
+                    <button class="btn btn-danger" name="action" value="clear">Clear Database</button>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-secondary" name="action" value="export_books">Export Books CSV</button>
+                    <button class="btn btn-secondary" name="action" value="export_authors">Export Authors CSV</button>
+                    <button class="btn btn-success" name="action" value="export_joined">Export Joined CSV</button>
+                </div>
             </div>
         </form>
-        {% if books %}
+
+        <div class="mb-4">
+            <span>Show Table:</span>
+            <a href="?show=books"
+                class="btn btn-outline-primary btn-sm {% if show == 'books' %}active{% endif %}">Books</a>
+            <a href="?show=authors"
+                class="btn btn-outline-primary btn-sm {% if show == 'authors' %}active{% endif %}">Authors</a>
+            <a href="?show=joined"
+                class="btn btn-outline-primary btn-sm {% if show == 'joined' %}active{% endif %}">Joined Table</a>
+        </div>
+
+        {% if show == "books" %}
+        <h3>Books</h3>
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>author</th>
                     <th>title</th>
+                    <th>author</th>
                     <th>publisher</th>
                     <th>year</th>
                     <th>series</th>
@@ -37,26 +60,119 @@
                 </tr>
             </thead>
             <tbody>
-                {% for book in books %}
+                {% for b in books %}
                 <tr>
-                    <td>{{ book.author }}</td>
-                    <td>{{ book.title }}</td>
-                    <td>{{ book.publisher }}</td>
-                    <td>{{ book.year }}</td>
-                    <td>{{ book.series }}</td>
-                    <td>{{ book.description }}</td>
-                    <td>{{ book.category }}</td>
-                    <td>{{ book.notes }}</td>
-                    <td>{{ book.isbn }}</td>
-                    <td>{{ book.price }}</td>
-                    <td>{{ book.reference }}</td>
+                    <td>{{ b.title }}</td>
+                    <td>{{ b.author }}</td>
+                    <td>{{ b.publisher }}</td>
+                    <td>{{ b.year }}</td>
+                    <td>{{ b.series }}</td>
+                    <td>{{ b.description }}</td>
+                    <td>{{ b.category }}</td>
+                    <td>{{ b.notes }}</td>
+                    <td>{{ b.isbn }}</td>
+                    <td>{{ b.price }}</td>
+                    <td>{{ b.reference }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% endif %}
-        {% if message %}
-        <div class="alert alert-info mt-3">{{ message }}</div>
+        {% elif show == "authors" %}
+        <h3>Authors</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>reference</th>
+                    <th>title</th>
+                    <th>author</th>
+                    <th>author2</th>
+                    <th>author3</th>
+                    <th>author4</th>
+                    <th>author5</th>
+                    <th>author6</th>
+                    <th>author7</th>
+                    <th>author8</th>
+                    <th>author9</th>
+                    <th>author10</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aa in additional_authors %}
+                <tr>
+                    <td>{{ aa.reference }}</td>
+                    {% for b in books %}
+                    {% if b.reference == aa.reference %}
+                    <td>{{ b.title }}</td>
+                    <td>{{ b.author }}</td>
+                    {% endif %}
+                    {% endfor %}
+                    <td>{{ aa.author2 }}</td>
+                    <td>{{ aa.author3 }}</td>
+                    <td>{{ aa.author4 }}</td>
+                    <td>{{ aa.author5 }}</td>
+                    <td>{{ aa.author6 }}</td>
+                    <td>{{ aa.author7 }}</td>
+                    <td>{{ aa.author8 }}</td>
+                    <td>{{ aa.author9 }}</td>
+                    <td>{{ aa.author10 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% elif show == "joined" %}
+        <h3>Joined Table</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>title</th>
+                    <th>author</th>
+                    <th>author2</th>
+                    <th>author3</th>
+                    <th>author4</th>
+                    <th>author5</th>
+                    <th>author6</th>
+                    <th>author7</th>
+                    <th>author8</th>
+                    <th>author9</th>
+                    <th>author10</th>
+                    <th>publisher</th>
+                    <th>year</th>
+                    <th>series</th>
+                    <th>description</th>
+                    <th>category</th>
+                    <th>notes</th>
+                    <th>isbn</th>
+                    <th>price</th>
+                    <th>reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in joined_books %}
+                <tr>
+                    <td>{{ row.title }}</td>
+                    <td>{{ row.author }}</td>
+                    <td>{{ row.author2 }}</td>
+                    <td>{{ row.author3 }}</td>
+                    <td>{{ row.author4 }}</td>
+                    <td>{{ row.author5 }}</td>
+                    <td>{{ row.author6 }}</td>
+                    <td>{{ row.author7 }}</td>
+                    <td>{{ row.author8 }}</td>
+                    <td>{{ row.author9 }}</td>
+                    <td>{{ row.author10 }}</td>
+                    <td>{{ row.publisher }}</td>
+                    <td>{{ row.year }}</td>
+                    <td>{{ row.series }}</td>
+                    <td>{{ row.description }}</td>
+                    <td>{{ row.category }}</td>
+                    <td>{{ row.notes }}</td>
+                    <td>{{ row.isbn }}</td>
+                    <td>{{ row.price }}</td>
+                    <td>{{ row.reference }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% endif %}
     </div>
 </body>
